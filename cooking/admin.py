@@ -8,10 +8,14 @@ class Relation(admin.TabularInline):
 
 @admin.register(RecipeModel)
 class RecipeModelAdmin(admin.ModelAdmin):
+    readonly_fields = ['id']
     inlines = [
         Relation
     ]
 
 
-admin.site.register(ProductModel)
+@admin.register(ProductModel)
+class ProductModelAdmin(admin.ModelAdmin):
+    readonly_fields = ['id']
+
 admin.site.register(RecipeToProductModel)

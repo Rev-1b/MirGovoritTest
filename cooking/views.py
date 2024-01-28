@@ -16,15 +16,14 @@ class AddProductToRecipeView(View):
 
         recipe_obj = get_object_or_404(RecipeModel, id=request.GET.get(key='recipe_id', default=0))
         product_obj = get_object_or_404(ProductModel, id=request.GET.get(key='product_id', default=0))
+        weight = request.GET.get(key='weight', default=0)
 
-        recipe_product = RecipeToProductModel.objects.filter(recipe=recipe_obj, product=product_obj).first()
+        recipe_products = RecipeToProductModel.objects.filter(recipe=recipe_obj, product=product_obj)
 
-        if recipe_product is None:
-            RecipeToProductModel.objects.create(recipe=recipe_obj, product=product_obj,
-                                                weight=request.GET.get(key='weight', default=0))
+        if recipe_products.exists():
+            recipe_products.update(weight=weight)
         else:
-            recipe_product.weight = request.GET.get(key='weight', default=0)
-            recipe_product.save()
+            RecipeToProductModel.objects.create(recipe=recipe_obj, product=product_obj, weight=weight)
 
         return render(request, 'cooking/index.html')
 
@@ -43,10 +42,9 @@ class ShowRecipesWithoutProductView(ListView):
 
         query = RecipeModel.objects.filter(
             ~Q(products__in=[product]) |
-            (
-                Q(products__in=[product]) &
-                Q(products__recipetoproductmodel__weight__lt=10)
-            )
+            (Q(products__in=[product]) &
+             Q(products__recipetoproductmodel__weight__lt=10)
+             )
         ).distinct().values('id', 'name')
 
         return query
