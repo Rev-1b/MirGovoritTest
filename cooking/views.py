@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.db.models import F, Q
 from django.http import HttpRequest
 from django.shortcuts import render, get_object_or_404
@@ -22,8 +23,11 @@ class AddProductToRecipeView(View):
 
         if recipe_products.exists():
             recipe_products.update(weight=weight)
+            messages.info(request, message=f'Вес продукта "{product_obj}", принадлежащего рецепту "{recipe_obj}" '
+                                           f'изменен на {weight} грамм')
         else:
             RecipeToProductModel.objects.create(recipe=recipe_obj, product=product_obj, weight=weight)
+            messages.info(request, message=f'Рецепту "{recipe_obj}" добавлено {weight} грамм продукта "{product_obj}"')
 
         return render(request, 'cooking/index.html')
 
@@ -32,6 +36,8 @@ class CookRecipeView(View):
     def get(self, request: HttpRequest, *args, **kwargs):
         recipe_obj = get_object_or_404(RecipeModel, id=request.GET.get(key='recipe_id', default=0))
         recipe_obj.products.update(was_cooked=F('was_cooked') + 1)
+
+        messages.info(request, message=f'Всем продуктам рецепта "{recipe_obj}" в поле "was_cooked" была добавлена 1')
 
         return render(request, 'cooking/index.html')
 

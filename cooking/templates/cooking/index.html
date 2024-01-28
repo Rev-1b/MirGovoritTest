@@ -25,8 +25,18 @@
                 Отобразить таблицу со всеми рецептами, в которых продукт, указанный по product_id, отсутствует, или его
                 вес не превышает 10 условных единиц. <br>
 
-                http://127.0.0.1:8000/show_recipes_without_product/?product_id=5
+                http://127.0.0.1:8000/show_recipes_without_product/?product_id=5<br><br>
             </div>
+            <div class="col-12">
+                {% if messages %}
+                    <ul class="messages">
+                        {% for message in messages %}
+                            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+
         </div>
     </div>
 </section>
