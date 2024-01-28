@@ -39,11 +39,17 @@ class CookRecipeView(View):
 
 class ShowRecipesWithoutProductView(ListView):
     def get_queryset(self):
-        product_id = self.request.GET.get(key='product_id', default=0)
+        product = get_object_or_404(ProductModel, id=self.request.GET.get(key='product_id', default=0))
 
-        return RecipeToProductModel.objects.filter(
-            ~Q(product_id=product_id) | (Q(product_id=product_id) &
-                                         Q(weight__lt=10))).values('recipe_id', 'recipe__name').distinct()
+        query = RecipeModel.objects.filter(
+            ~Q(products__in=[product]) |
+            (
+                Q(products__in=[product]) &
+                Q(products__recipetoproductmodel__weight__lt=10)
+            )
+        ).distinct().values('id', 'name')
+
+        return query
 
     template_name = 'cooking/show_recipies.html'
     context_object_name = 'recipes'
