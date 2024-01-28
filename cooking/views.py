@@ -23,8 +23,8 @@ class AddProductToRecipeView(View):
 
         if recipe_products.exists():
             recipe_products.update(weight=weight)
-            messages.info(request, message=f'Вес продукта "{product_obj}", принадлежащего рецепту "{recipe_obj}" '
-                                           f'изменен на {weight} грамм')
+            messages.info(request, message=f'Вес продукта "{product_obj}" в рецепте "{recipe_obj}" '
+                                           f'установлен на {weight} грамм')
         else:
             RecipeToProductModel.objects.create(recipe=recipe_obj, product=product_obj, weight=weight)
             messages.info(request, message=f'Рецепту "{recipe_obj}" добавлено {weight} грамм продукта "{product_obj}"')
